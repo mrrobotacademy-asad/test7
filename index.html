@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاختبار الأسبوعي: الاستجابة للحوادث وإدارة المخاطر | منصة كودجي CodeG</title>
+    <style>
+        :root {
+            --bg-color: #0b1329;
+            --card-bg: #111d40;
+            --border-color: #1e293b;
+            --text-color: #f8fafc;
+            --subtext-color: #94a3b8;
+            --accent-color: #0284c7;
+            --accent-hover: #0369a1;
+            --gold-color: #f59e0b;
+            --success-color: #16a34a;
+            --wrong-color: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 60px;
+            min-height: 100vh;
+        }
+
+        /* شريط التقدم */
+        .top-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-color), var(--gold-color));
+            transition: width 0.3s ease;
+        }
+
+        /* المؤقت الزمني */
+        .timer-box {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #38bdf8;
+            z-index: 999;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+
+        .copy-success {
+            position: fixed;
+            top: 20px;
+            right: 50%;
+            transform: translateX(50%);
+            background: var(--success-color);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            display: none;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .copy-success.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* الهيدر */
+        header {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            border-bottom: 3px solid var(--gold-color);
+            padding: 25px 15px;
+            text-align: center;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .logo-box {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .brand-text h1 {
+            font-size: 1.6rem;
+            color: #38bdf8;
+            margin-bottom: 4px;
+            font-weight: 900;
+        }
+
+        .brand-text p {
+            font-size: 1rem;
+            color: var(--subtext-color);
+            font-weight: 600;
+        }
+
+        .header-badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-ib {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            font-weight: 700;
+        }
+
+        /* الحاوية الرئيسية والتبويبات */
+        .container {
+            max-width: 850px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-nav-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: var(--subtext-color);
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-nav-btn.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* الكروت */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            color: #38bdf8;
+            margin-bottom: 12px;
+            font-weight: 900;
+        }
+
+        .info-block.warning {
+            background: rgba(245, 158, 11, 0.08);
+            border-right: 4px solid var(--gold-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #334155;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-copy {
+            background: #8b5cf6;
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+        }
+
+        .btn-copy:hover {
+            background: #7c3aed;
+        }
+
+        /* أسئلة الاختبار */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .badge-accent {
+            background: rgba(2, 132, 199, 0.2);
+            color: #38bdf8;
+            border: 1px solid var(--accent-color);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 18px 0;
+            line-height: 1.7;
+            color: #f8fafc;
+        }
+
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-item:hover {
+            border-color: var(--accent-color);
+        }
+
+        .option-item.correct {
+            background: rgba(22, 163, 74, 0.2);
+            border-color: var(--success-color);
+            color: #4ade80;
+        }
+
+        .option-item.wrong {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: var(--wrong-color);
+            color: #f87171;
+        }
+
+        .essay-area {
+            width: 100%;
+            min-height: 120px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            padding: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            resize: vertical;
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .feedback-msg {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .feedback-msg.correct {
+            background: rgba(22, 163, 74, 0.15);
+            color: #4ade80;
+            border: 1px solid var(--success-color);
+        }
+
+        .feedback-msg.wrong {
+            background: rgba(220, 38, 38, 0.15);
+            color: #f87171;
+            border: 1px solid var(--wrong-color);
+        }
+
+        /* النتيجة والشهادة */
+        .report-details {
+            max-height: 350px;
+            overflow-y: auto;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .q-item {
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .q-num {
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        .correct-ans { color: #4ade80; font-weight: bold; }
+        .wrong-ans { color: #f87171; font-weight: bold; }
+        .user-ans { color: #cbd5e1; }
+
+        .certificate-box {
+            background: linear-gradient(135deg, #1e1b4b, #0f172a);
+            border: 2px solid var(--gold-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .certificate-box h2 {
+            color: var(--gold-color);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .student-name {
+            font-size: 1.4rem;
+            color: #38bdf8;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .cert-score {
+            font-size: 1.2rem;
+            color: #4ade80;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .whatsapp-hint {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-top: 8px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 10px; }
+            .brand-text h1 { font-size: 1.3rem; }
+            .card { padding: 15px; }
+            .timer-box { top: 50px; left: 10px; font-size: 0.8rem; }
+            .nav-controls .btn { padding: 8px 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+<div class="timer-box" id="timer-box">⏱️ <span id="timer-display">90:00</span></div>
+<button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div class="copy-success" id="copy-success">✅ تم نسخ التقرير إلى الحافظة!</div>
+
+<header>
+    <div class="header-content">
+        <div class="logo-section">
+            <div class="logo-box">🧠</div>
+            <div class="brand-text">
+                <h1>منصة كودجي - مهندس: اندرو مجدي</h1>
+                <p>الاختبار الأسبوعي: الاستجابة للحوادث وإدارة المخاطر (الوحدة الثانية: الأمن السيبراني)</p>
+            </div>
+            <div class="logo-box">👨‍🏫</div>
+        </div>
+        <div class="header-badges">
+            <span class="badge-ib">🛡️ الوحدة الثانية</span>
+            <span class="badge-ib">🚨 الدرس الثالث</span>
+            <span class="badge-ib">🇪🇬 مصر</span>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="tab-nav" id="main-tabs">
+        <button class="tab-nav-btn" data-tab="instructions" onclick="switchMainTab('instructions')">📖 تعليمات</button>
+        <button class="tab-nav-btn active" data-tab="quiz" onclick="switchMainTab('quiz')">📝 الاختبار</button>
+        <button class="tab-nav-btn" data-tab="result" onclick="switchMainTab('result')">🏆 النتيجة</button>
+    </div>
+
+    <!-- تبويب التعليمات -->
+    <div class="tab-content" id="tab-instructions">
+        <section class="card">
+            <h2>📖 تعليمات الاختبار الأسبوعي</h2>
+            <div class="info-block warning">
+                <p style="font-size:1.05rem;line-height:2;">
+                    <strong>📌 مكونات الاختبار:</strong><br>
+                    • <strong>20 سؤال اختيار من متعدد</strong> (من كتاب التقييمات والكتاب المدرسي)<br>
+                    • <strong>10 أسئلة مقالية وتحليلية</strong> (من كتاب التقييمات والكتاب المدرسي)<br><br>
+
+                    <strong>⏱️ مدة الاختبار:</strong> 90 دقيقة<br>
+                    <strong>✅ عدد الأسئلة الكلي:</strong> 30 سؤالاً<br><br>
+
+                    <strong>📝 التعليمات:</strong><br>
+                    1. اقرأ كل سؤال بعناية قبل الإجابة.<br>
+                    2. للاختياري: اختر الإجابة الصحيحة ثم يمكنك الضغط على "تحقق".<br>
+                    3. للمقالي: اكتب إجابة منظمة ومفصلة من واقع فهمك للدرس.<br>
+                    4. بعد الانتهاء، اضغط "تأكيد إنهاء الاختبار وإرسال الإجابات".
+                </p>
+            </div>
+            <button class="btn" style="width:100%;padding:14px;margin-top:10px;" onclick="switchMainTab('quiz')">🚀 ابدأ الاختبار الآن</button>
+        </section>
+    </div>
+
+    <!-- تبويب الاختبار -->
+    <div class="tab-content active" id="tab-quiz">
+        <section class="card" id="quiz-setup">
+            <h2>📝 الاختبار الأسبوعي - الدرس الثالث: الاستجابة للحوادث وإدارة المخاطر</h2>
+            <p style="color:var(--subtext-color);">20 سؤال اختيار من متعدد + 10 أسئلة مقالية (الكتاب المدرسي + التقييمات والأداءات الرسمية).</p>
+            <div style="margin:15px 0;">
+                <label style="display:block;margin-bottom:6px;font-weight:700;">👤 اسمك الثلاثي:</label>
+                <input type="text" id="student-name-input" placeholder="اكتب اسمك هنا..." style="width:100%;padding:12px;background:var(--bg-color);border:1px solid var(--border-color);border-radius:8px;color:#fff;font-size:1rem;">
+            </div>
+            <button class="btn" style="width:100%;padding:14px;" onclick="startQuiz()">🚀 ابدأ الاختبار الآن</button>
+        </section>
+
+        <section class="card" id="quiz-container" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <h2 id="question-title" style="color:#fffffe;">السؤال 1</h2>
+                <span class="badge badge-accent" id="quiz-progress">1 من 30</span>
+            </div>
+            <div id="dynamic-quiz-area"></div>
+            <div id="feedback-area"></div>
+            <div class="nav-controls">
+                <button class="btn btn-secondary" id="prev-quiz" onclick="navigateQuiz(-1)">السابق</button>
+                <button class="btn" style="background:var(--accent-color);" onclick="checkCurrentAnswer()">🔍 تحقق</button>
+                <button class="btn btn-secondary" id="next-quiz" onclick="navigateQuiz(1)">التالي</button>
+            </div>
+            <button class="btn btn-success" style="width:100%;margin-top:20px;padding:14px;" onclick="submitQuiz()">✔ تأكيد إنهاء الاختبار وإرسال الإجابات</button>
+        </section>
+    </div>
+
+    <!-- تبويب النتيجة -->
+    <div class="tab-content" id="tab-result">
+        <section class="card" id="result-container" style="display:none;">
+            <h2>🎉 نتيجة الاختبار</h2>
+            <p id="score-summary" style="color:var(--subtext-color);font-size:1.1rem;line-height:2;"></p>
+            <div id="report-details-container" class="report-details"></div>
+            <div class="certificate-box" id="certificate">
+                <h2>📜 شهادة إتمام</h2>
+                <p>تشهد منصة كودجي بأن الطالب/الطالبة:</p>
+                <div class="student-name" id="cert-name">—</div>
+                <p>قد أتم بنجاح اختبار <b>الدرس الثالث: الاستجابة للحوادث وإدارة المخاطر (الوحدة الثانية)</b></p>
+                <p class="cert-score" id="cert-score">🌟 النتيجة: 0%</p>
+                <div style="margin-top:25px;font-size:0.85rem;color:var(--subtext-color);">📅 تم التقييم آلياً بواسطة منصة كودجي 🤖</div>
+            </div>
+
+            <div style="margin-top:25px;">
+                <button class="btn btn-copy" onclick="copyReportToClipboard()">
+                    📋 انسخ التقرير وارسله عبر الواتساب للمهندس أندرو 01285529570
+                </button>
+                <div class="whatsapp-hint">
+                    <span>💡</span>
+                    بعد الضغط على الزر، اذهب إلى واتساب وألصق التقرير (Paste) وأرسله للمهندس أندرو
+                </div>
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:20px;">
+                <button class="btn btn-secondary" onclick="location.reload()">🔄 إعادة الاختبار</button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    var quizData = [
+        // MCQ Questions
+        {
+            type: "mcq",
+            q: "حدث تؤثر في سرية المعلومات أو سلامتها أو توافرها أو يخالف سياسة أمنية معتمدة يُسمى:",
+            opts: ["حادثاً أمنياً (Security Incident)", "تقييماً للمخاطر", "احتواءً للتهديد", "درساً مستفاداً"],
+            ans: 0
+        },
+        {
+            type: "mcq",
+            q: "أي من الخيارات التالية يُعد مثالاً نموذجياً على حادث أمني تؤثر بشكل مباشر في توافر الخدمة (Availability)؟",
+            opts: ["تسرب المعلومات الشخصية أو السرية إلى الخارج", "تعديل البيانات داخل نظام ما دون تصريح", "انقطاع الخدمة بسبب هجمات إلكترونية على الخادم", "إنشاء إجراءات وهياكل استجابة مسبقاً"],
+            ans: 2
+        },
+        {
+            type: "mcq",
+            q: "تعديل البيانات داخل نظام ما دون تصريح يُعد مثالاً نموذجياً على:",
+            opts: ["انقطاع الخدمة", "تسرب المعلومات", "التلاعب بالبيانات (Data Tampering)", "التحضير المسبق"],
+            ans: 2
+        },
+        {
+            type: "mcq",
+            q: "تسرب المعلومات الشخصية أو السرية الخاصة بالعملاء إلى الخارج يُمثل حادثاً أمنياً من نوع:",
+            opts: ["تسرب المعلومات (Information Leak)", "انقطاع الخدمة", "التلاعب بالبيانات", "الاستعادة الآمنة"],
+            ans: 0
+        },
+        {
+            type: "mcq",
+            q: "أي من الخيارات التالية لا يمثل مثالاً لحادث أمني؟",
+            opts: ["تشفير البيانات بسبب الإصابة ببرنامج فدية", "تسرب معلومات العملاء عبر وصول غير مصرح به", "إجراء تحديث للبرنامج لإضافة ميزات جديدة", "توقف خدمة ويب عن العمل بسبب هجوم على الخادم"],
+            ans: 2
+        },
+        {
+            type: "mcq",
+            q: "ما هي المرحلة الأولى من نموذج الاستجابة للحوادث الست التي تهدف إلى إنشاء إجراءات وهياكل استجابة مسبقاً استعداداً للطوارئ؟",
+            opts: ["الاكتشاف", "التحضير (Preparation)", "الاحتواء", "الاستعادة"],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "المرحلة التي تتضمن اكتشاف وتأكيد وقوع حادث أمني في النظام بعد التحضير المسبق هي:",
+            opts: ["الاستعادة", "الاكتشاف (Detection)", "الدروس المستفادة", "الاستئصال"],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "ما هو المصطلح الذي يُطلق على إجراء عزل الجزء المتأثر أو تقييد أثره بالطريقة المناسبة لمنع انتشار المشكلة لبقية الشبكة؟",
+            opts: ["التحضير", "الاكتشاف", "الاحتواء (Containment)", "الاستعادة"],
+            ans: 2
+        },
+        {
+            type: "mcq",
+            q: "فصل حاسوب مصاب بالبرمجيات الخبيثة عن الشبكة لمنع انتشار الضرر يُعد تطبيقاً مباشراً لمرحلة:",
+            opts: ["التحضير", "الاحتواء", "الاستئصال", "الاستعادة"],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "ماذا تعني مرحلة «الاستئصال / إزالة التهديد (Eradication)» في نموذج الاستجابة للحوادث؟",
+            opts: ["إنشاء إجراءات استجابة مسبقاً", "إزالة التهديد ومسبباته الجذرية مثل حذف البرمجيات الخبيثة وسد الثغرات", "استعادة الأنظمة من نسخة احتياطية", "توثيق الملاحظات والدروس المستفادة"],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "المرحلة التي تُعنى بإعادة الأنظمة والخدمات إلى حالة تشغيل آمنة وطبيعية وتشمل الاستعادة من نسخة احتياطية سليمة هي:",
+            opts: ["الاستعادة (Recovery)", "الاحتواء", "الاكتشاف", "التحضير"],
+            ans: 0
+        },
+        {
+            type: "mcq",
+            q: "أي مرحلة تختتم بها المراحل الست وتتضمن تحليل ما حدث وتوثيق الدروس لتحسين الضوابط وتقليل احتمال تكرار الحادث؟",
+            opts: ["الاكتشاف", "إزالة التهديد", "الاستعادة", "الدروس المستفادة والتحسين (Prevention of Recurrence)"],
+            ans: 3
+        },
+        {
+            type: "mcq",
+            q: "ما هو الترتيب الصحيح للتسلسل العام لنموذج مراحل الاستجابة للحوادث الست؟",
+            opts: [
+                "الاكتشاف ← الاستئصال ← الاحتواء ← الاستعادة ← التحضير ← الدروس المستفادة",
+                "التحضير ← الاكتشاف ← الاحتواء ← إزالة التهديد (الاستئصال) ← الاستعادة ← الدروس المستفادة والتحسين",
+                "الاحتواء ← التحضير ← الاكتشاف ← الاستئصال ← الدروس المستفادة ← الاستعادة",
+                "التحضير ← الاحتواء ← الاكتشاف ← الاستعادة ← الاستئصال ← الدروس المستفادة"
+            ],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "لماذا يجب تنفيذ مرحلة «الاحتواء» قبل مرحلة «الاستئصال (إزالة التهديد)»؟",
+            opts: [
+                "لأن الاحتواء يعزل الضرر ويمنع امتداد الهجوم للشبكة أثناء محاولة إزالة التهديد",
+                "لأن الاستئصال يتم تلقائياً بدون تدخل فني",
+                "لأن الاحتواء يحذف البرمجيات الخبيثة نهائياً",
+                "لأن الاستعادة تسبق مرحلة الاحتواء دائماً"
+            ],
+            ans: 0
+        },
+        {
+            type: "mcq",
+            q: "كيف يتم حساب «درجة الخطر» في نموذج تقييم المخاطر المبسط للدرس؟",
+            opts: ["التأثير + الاحتمالية", "التأثير ÷ الاحتمالية", "التأثير × الاحتمالية", "التأثير - الاحتمالية"],
+            ans: 2
+        },
+        {
+            type: "mcq",
+            q: "ما المقصود بمصطلح «التأثير (Impact)» في سياق تقييم المخاطر؟",
+            opts: ["مدى احتمال وقوع الحدث", "مقدار وحجم الضرر المتوقع إذا وقعت المخاطرة", "سرعة استجابة فريق الطوارئ", "عدد مرات تكرار الحادث سنوياً"],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "ماذا يُقصد بمصطلح «الاحتمالية (Likelihood)» في تقييم المخاطر؟",
+            opts: ["حجم الخسائر المادية المترتبة", "مدى إمكانية أو احتمال وقوع الحدث أو المخاطرة", "سرعة تنفيذ مراحل الاستجابة", "عدد الأجهزة المتأثرة بالهجوم"],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "وفقاً لمصفوفة تقييم المخاطر، ما هي الفئة التي تُعد من أعلى الأولويات ويجب معالجتها أولاً وبشكل حاسم؟",
+            opts: ["التأثير المنخفض والاحتمالية المنخفضة", "التأثير المتوسط والاحتمالية المتوسطة", "التأثير المرتفع والاحتمالية المرتفعة (Critical)", "التأثير المنخفض والاحتمالية المرتفعة"],
+            ans: 2
+        },
+        {
+            type: "mcq",
+            q: "المخاطر ذات التأثير المرتفع والاحتمالية المنخفضة في مصفوفة تقييم المخاطر تصنف عادة على أنها ذات خطورة:",
+            opts: ["مرتفعة جداً", "متوسطة (Medium)", "معدومة", "منخفضة جداً"],
+            ans: 1
+        },
+        {
+            type: "mcq",
+            q: "إذا كشفت مرحلة «الاستعادة» عن وجود بقايا للبرمجية الخبيثة، فإن الإجراء الصحيح الذي يفرضه النموذج الواقعي للاستجابة هو:",
+            opts: [
+                "مواصلة تشغيل النظام وتجاهل البقايا",
+                "العودة فوراً إلى مرحلة الاحتواء أو إزالة التهديد للقضاء عليها",
+                "مسح النسخ الاحتياطية السليمة",
+                "إنهاء خطة الاستجابة فوراً"
+            ],
+            ans: 1
+        },
+        // Essay Questions
+        {
+            type: "essay",
+            q: "ما المقصود بمصطلح «الحادث الأمني»، واذكر ثلاثة من أبرز أمثلته النموذجية مع بيان وصف وأثر كل منها؟"
+        },
+        {
+            type: "essay",
+            q: "اذكر المراحل الست للاستجابة للحوادث بترتيبها التسلسلي الصحيح، مع بيان الغرض الأساسي لكل من مرحلتي «التحضير» و«الاكتشاف»."
+        },
+        {
+            type: "essay",
+            q: "وضح بالتفصيل الغرض من مرحلتي «الاحتواء» و«إزالة التهديد (الاستئصال)»، وميّز بين دور كل منهما في خطة الاستجابة."
+        },
+        {
+            type: "essay",
+            q: "اشرح بالتفصيل كيف يتم تنفيذ مرحلتي «الاستعادة» و«الدروس المستفادة والتحسين» عند التعامل مع حادث أمني خطير مثل هجوم برمجية فدية."
+        },
+        {
+            type: "essay",
+            q: "لماذا يجب تنفيذ مرحلة «الاحتواء» قبل مرحلة «الاستئصال (إزالة التهديد)»؟ وما الخطر المترتب على بدء الاستعادة قبل القضاء على مسبب الحادث؟"
+        },
+        {
+            type: "essay",
+            q: "ناقش العبارة التالية: «يساعد ترتيب المراحل على فهم التسلسل العام، لكن الاستجابة الفعلية قد تتضمن تداخلاً أو تكراراً بين الأنشطة»، مع ذكر مثال عملي يوضح ذلك."
+        },
+        {
+            type: "essay",
+            q: "كيف يتم تقدير «درجة الخطر» في نموذج الدرس المبسط؟ اذكر معادلته الرياضية، وعرّف كلاً من العاملين الأساسيين المكونين له (التأثير والاحتمالية)."
+        },
+        {
+            type: "essay",
+            q: "اشرح كيف تستخدم المؤسسات «مصفوفة تقييم المخاطر» لتصنيف المخاطر وتوجيه الجهود المحدودة نحو المعالجة ذات الأولوية القصوى."
+        },
+        {
+            type: "essay",
+            q: "قارن بين كيفية تعامل مسؤولي الأمن مع خطر ذي (تأثير مرتفع واحتمالية مرتفعة) مقابل خطر ذي (تأثير مرتفع واحتمالية منخفضة) استناداً لمصفوفة المخاطر."
+        },
+        {
+            type: "essay",
+            q: "سيناريو تطبيقي: متجر إلكتروني اكتشف للتو تسرب بيانات العملاء؛ حدد المرحلتين التاليتين مباشرة الواجب تنفيذهما بالترتيب مع التعليل، واقترح خطراً واحداً يجب منحه الأولوية القصوى مستقبلاً."
+        }
+    ];
+
+    var currentQuizIndex = 0;
+    var studentAnswers = new Array(quizData.length).fill(null);
+    var studentEssayAnswers = new Array(quizData.length).fill('');
+    var studentName = '';
+    var quizTimer = null;
+    var timeLeft = 5400; // 90 min
+
+    function switchMainTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+        var target = document.getElementById('tab-' + tab);
+        if (target) target.classList.add('active');
+        document.querySelectorAll('.tab-nav-btn').forEach(function(el) { el.classList.remove('active'); });
+        var btn = document.querySelector('.tab-nav-btn[data-tab="' + tab + '"]');
+        if (btn) btn.classList.add('active');
+    }
+
+    function updateProgress() {
+        var answeredCount = 0;
+        quizData.forEach(function(q, idx) {
+            if (q.type === 'mcq') {
+                if (studentAnswers[idx] !== null) answeredCount++;
+            } else {
+                if ((studentEssayAnswers[idx] || '').trim().length >= 5) answeredCount++;
+            }
+        });
+        var pct = Math.min(100, Math.round((answeredCount / quizData.length) * 100));
+        var fill = document.getElementById('progress-fill');
+        if (fill) fill.style.width = pct + '%';
+    }
+
+    function startQuiz() {
+        var nameInput = document.getElementById('student-name-input');
+        if (!nameInput.value.trim()) {
+            alert('⚠️ برجاء إدخال اسمك الثلاثي لتمكين تقديم الاختبار');
+            return;
+        }
+        studentName = nameInput.value.trim();
+        document.getElementById('quiz-setup').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        document.getElementById('timer-box').style.display = 'block';
+
+        if (quizTimer) clearInterval(quizTimer);
+        timeLeft = 5400;
+        quizTimer = setInterval(function() {
+            timeLeft--;
+            var mins = Math.floor(timeLeft / 60);
+            var secs = timeLeft % 60;
+            document.getElementById('timer-display').textContent =
+                (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
+            if (timeLeft <= 0) {
+                clearInterval(quizTimer);
+                alert('⏰ انتهى الوقت المخصص للاختبار! سيتم تسليم الإجابات تلقائياً.');
+                submitQuiz();
+            }
+        }, 1000);
+
+        loadQuizQuestion(0);
+    }
+
+    function loadQuizQuestion(index) {
+        var q = quizData[index];
+        if (!q) return;
+        document.getElementById('question-title').textContent = 'السؤال ' + (index + 1) + (q.type === 'mcq' ? ' (اختياري)' : ' (مقالي)');
+        document.getElementById('quiz-progress').textContent = (index + 1) + ' من ' + quizData.length;
+
+        var area = document.getElementById('dynamic-quiz-area');
+        var html = '<div class="question-text">' + q.q + '</div>';
+
+        if (q.type === 'mcq') {
+            html += '<ul class="options-list">';
+            q.opts.forEach(function(opt, oi) {
+                var checked = studentAnswers[index] === oi ? 'checked' : '';
+                html += '<li class="option-item" onclick="selectOption(' + index + ', ' + oi + ')" id="opt-item-' + oi + '">';
+                html += '<input type="radio" name="mcq-radio-' + index + '" id="radio-' + oi + '" value="' + oi + '" ' + checked + ' style="accent-color:var(--accent-color);">';
+                html += '<label for="radio-' + oi + '" style="cursor:pointer;width:100%;display:block;">' + opt + '</label>';
+                html += '</li>';
+            });
+            html += '</ul>';
+        } else {
+            var essayVal = studentEssayAnswers[index] || '';
+            html += '<textarea class="essay-area" id="essay-' + index + '" placeholder="اكتب إجابتك المفصلة والنظيفة هنا..." oninput="updateEssayAnswer(' + index + ', this.value)">' + essayVal + '</textarea>';
+            html += '<div style="font-size:0.85rem;color:var(--subtext-color);">✍️ اكتب إجابة مفصلة ومنظمة من واقع فهمك للدرس.</div>';
+        }
+
+        area.innerHTML = html;
+        document.getElementById('feedback-area').innerHTML = '';
+        document.getElementById('prev-quiz').disabled = (index === 0);
+        document.getElementById('next-quiz').disabled = (index === quizData.length - 1);
+        updateProgress();
+    }
+
+    function selectOption(qIndex, optIdx) {
+        studentAnswers[qIndex] = optIdx;
+        var items = document.querySelectorAll('.option-item');
+        items.forEach(function(item, idx) {
+            var radio = item.querySelector('input');
+            if (radio) radio.checked = (idx === optIdx);
+        });
+        document.getElementById('feedback-area').innerHTML = '';
+        updateProgress();
+    }
+
+    function updateEssayAnswer(index, value) {
+        studentEssayAnswers[index] = value;
+        updateProgress();
+    }
+
+    function checkCurrentAnswer() {
+        var q = quizData[currentQuizIndex];
+        var fb = document.getElementById('feedback-area');
+
+        if (q.type === 'mcq') {
+            var selected = studentAnswers[currentQuizIndex];
+            if (selected === null || selected === undefined) {
+                fb.innerHTML = '<div class="feedback-msg wrong">⚠️ لم تختر إجابة بعد.</div>';
+                return;
+            }
+            var correct = (q.ans === selected);
+            var items = document.querySelectorAll('.option-item');
+            items.forEach(function(item, idx) {
+                item.classList.remove('correct', 'wrong');
+                if (idx === q.ans) item.classList.add('correct');
+                else if (idx === selected && !correct) item.classList.add('wrong');
+            });
+            if (correct) {
+                fb.innerHTML = '<div class="feedback-msg correct">🎉 إجابة صحيحة! أحسنت.</div>';
+            } else {
+                fb.innerHTML = '<div class="feedback-msg wrong">❌ إجابة خاطئة. الإجابة الصحيحة هي: ' + q.opts[q.ans] + '</div>';
+            }
+        } else {
+            var essayVal = studentEssayAnswers[currentQuizIndex] || '';
+            if (essayVal.trim().length < 5) {
+                fb.innerHTML = '<div class="feedback-msg wrong">⚠️ يرجى كتابة إجابة أطول (على الأقل 5 أحرف).</div>';
+            } else {
+                fb.innerHTML = '<div class="feedback-msg correct">✅ تم حفظ إجابتك المقالية بنجاح.</div>';
+            }
+        }
+    }
+
+    function navigateQuiz(delta) {
+        var essayArea = document.getElementById('essay-' + currentQuizIndex);
+        if (essayArea) studentEssayAnswers[currentQuizIndex] = essayArea.value;
+
+        var newIdx = currentQuizIndex + delta;
+        if (newIdx >= 0 && newIdx < quizData.length) {
+            currentQuizIndex = newIdx;
+            loadQuizQuestion(currentQuizIndex);
+        }
+    }
+
+    function submitQuiz() {
+        var essayArea = document.getElementById('essay-' + currentQuizIndex);
+        if (essayArea) studentEssayAnswers[currentQuizIndex] = essayArea.value;
+
+        var unanswered = 0;
+        var mcqCorrect = 0;
+        var mcqTotal = 0;
+        var essayAnswered = 0;
+        var essayTotal = 0;
+
+        quizData.forEach(function(q, idx) {
+            if (q.type === 'mcq') {
+                mcqTotal++;
+                if (studentAnswers[idx] === q.ans) mcqCorrect++;
+                else if (studentAnswers[idx] === null) unanswered++;
+            } else {
+                essayTotal++;
+                var ans = studentEssayAnswers[idx] || '';
+                if (ans.trim().length >= 5) essayAnswered++;
+                else unanswered++;
+            }
+        });
+
+        if (unanswered > 0) {
+            if (!confirm('⚠️ لديك ' + unanswered + ' سؤالاً لم تجب عليه. هل تريد تأكيد الإرسال على أي حال؟')) {
+                return;
+            }
+        }
+
+        clearInterval(quizTimer);
+        document.getElementById('timer-box').style.display = 'none';
+
+        var mcqPercent = mcqTotal > 0 ? Math.round((mcqCorrect / mcqTotal) * 100) : 0;
+        var essayPercent = essayTotal > 0 ? Math.round((essayAnswered / essayTotal) * 100) : 0;
+        var overall = Math.round((mcqPercent + essayPercent) / 2);
+
+        var reportHTML = '<h3 style="color:#fff;">📋 التقرير الشامل للإجابات</h3>';
+        quizData.forEach(function(q, idx) {
+            var num = idx + 1;
+            reportHTML += '<div class="q-item">';
+            reportHTML += '<div class="q-num">السؤال ' + num + ':</div>';
+            reportHTML += '<div>' + q.q + '</div>';
+            if (q.type === 'mcq') {
+                var userAns = studentAnswers[idx];
+                var isCorrect = (userAns === q.ans);
+                var correctText = q.opts[q.ans];
+                var userText = (userAns !== null && userAns !== undefined) ? q.opts[userAns] : 'لم يتم الإجابة';
+                var cls = isCorrect ? 'correct-ans' : 'wrong-ans';
+                var icon = isCorrect ? '✅' : '❌';
+                reportHTML += '<div>📌 الإجابة الصحيحة: <span class="correct-ans">' + correctText + '</span></div>';
+                reportHTML += '<div>👤 إجابة الطالب: <span class="' + cls + '">' + userText + '</span> ' + icon + '</div>';
+            } else {
+                var userText = studentEssayAnswers[idx] || 'لم يتم الإجابة';
+                reportHTML += '<div>👤 إجابة الطالب: <span class="user-ans">' + userText + '</span></div>';
+            }
+            reportHTML += '</div>';
+        });
+
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('score-summary').innerHTML =
+            '📊 <b style="color:#fff;">النتيجة النهائية:</b> ' + overall + '%<br>' +
+            '📝 اختيار من متعدد: ' + mcqCorrect + '/' + mcqTotal + ' (' + mcqPercent + '%)<br>' +
+            '✍️ مقالي: ' + essayAnswered + '/' + essayTotal + ' (' + essayPercent + '%)';
+
+        document.getElementById('report-details-container').innerHTML = reportHTML;
+        document.getElementById('cert-name').textContent = studentName || 'طالب منصة كودجي';
+        document.getElementById('cert-score').textContent = '🌟 النتيجة: ' + overall + '%';
+
+        switchMainTab('result');
+        updateProgress();
+    }
+
+    function copyReportToClipboard() {
+        var reportLines = [];
+        reportLines.push('مرحباً مهندس أندرو 👋');
+        reportLines.push('');
+        reportLines.push('الطالب/الطالبة: ' + (studentName || 'طالب منصة كودجي'));
+        reportLines.push('الدرس: الثالث (الوحدة الثانية) - الاستجابة للحوادث وإدارة المخاطر');
+        reportLines.push(document.getElementById('cert-score').textContent || '🌟 النتيجة: 100%');
+        reportLines.push('');
+        reportLines.push('📋 التقرير الشامل - الاختبار الأسبوعي للدرس الثالث (الاستجابة للحوادث):');
+        reportLines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+        quizData.forEach(function(q, idx) {
+            var num = idx + 1;
+            var line = 'س' + num + ': ' + q.q;
+            if (q.type === 'mcq') {
+                var userAns = studentAnswers[idx];
+                var isCorrect = (userAns === q.ans);
+                var correctText = q.opts[q.ans];
+                var userText = (userAns !== null && userAns !== undefined) ? q.opts[userAns] : 'لم يجب';
+                var icon = isCorrect ? '✅' : '❌';
+                line += ' | صح: ' + correctText + ' | إجابتي: ' + userText + ' ' + icon;
+            } else {
+                var userText = studentEssayAnswers[idx] || 'لم يجب';
+                line += ' | إجابتي: ' + userText;
+            }
+            reportLines.push(line);
+        });
+
+        reportLines.push('');
+        reportLines.push('تم التقييم آلياً بواسطة منصة كودجي 🤖');
+
+        var fullReport = reportLines.join('\n');
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(fullReport).then(function() {
+                showCopySuccess();
+            }).catch(function() {
+                fallbackCopy(fullReport);
+            });
+        } else {
+            fallbackCopy(fullReport);
+        }
+    }
+
+    function fallbackCopy(text) {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showCopySuccess();
+        } catch (err) {
+            alert('❌ حدث خطأ أثناء النسخ. برجاء نسخ التقرير يدوياً.');
+        }
+        document.body.removeChild(textarea);
+    }
+
+    function showCopySuccess() {
+        var el = document.getElementById('copy-success');
+        el.classList.add('show');
+        setTimeout(function() {
+            el.classList.remove('show');
+        }, 4000);
+    }
+
+    window.addEventListener('scroll', function() {
+        var btn = document.getElementById('scroll-top');
+        if (window.scrollY > 400) btn.style.display = 'block';
+        else btn.style.display = 'none';
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+        switchMainTab('instructions');
+    });
+
+    window.switchMainTab = switchMainTab;
+    window.startQuiz = startQuiz;
+    window.selectOption = selectOption;
+    window.checkCurrentAnswer = checkCurrentAnswer;
+    window.submitQuiz = submitQuiz;
+    window.copyReportToClipboard = copyReportToClipboard;
+    window.navigateQuiz = navigateQuiz;
+    window.loadQuizQuestion = loadQuizQuestion;
+    window.updateEssayAnswer = updateEssayAnswer;
+</script>
+
+</body>
+</html>
